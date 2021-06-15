@@ -53,18 +53,26 @@ from sklearn.metrics import roc_curve
 from sklearn.metrics import roc_auc_score
 from sklearn.metrics import log_loss
 import tensorflow as tf
-from keras.models import Sequential
+from tensorflow import keras
+from tensorflow.keras.models import Sequential
 from keras.layers import Dense
+
+from keras import backend as Kback
+
+def auc(value_true, value_pred):
+    auc = tf.metrics.auc(value_true, value_pred)[1]
+    Kback.get_session().run(tf.local_variables_initializer())
+    return auc
 
 model = Sequential()
 model.add(Dense(70, activation='relu', input_shape=(70,)))
 model.add(Dense(70, activation='relu'))
 model.add(Dense(1, activation='sigmoid'))
 
-model.compile(loss='binary_crossentropy',
-              optimizer='adam',
-              metrics=['accuracy'])
-
+#model.compile(loss='binary_crossentropy',
+ #             optimizer='adam',
+  #            metrics=['accuracy'])
+model.compile(loss="binary_crossentropy", optimizer='adam', metrics=[auc])
 
 model.fit(training_points, training_values, epochs=8, batch_size=1, verbose=1)
 
