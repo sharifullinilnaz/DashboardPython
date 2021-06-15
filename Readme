@@ -1,0 +1,2 @@
+Command to start app (run in parent folder) :  
+bokeh serve --show atm
