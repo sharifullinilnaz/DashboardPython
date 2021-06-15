@@ -1,0 +1,26 @@
+{% extends base %}
+
+{% block postamble %}
+<style>
+    h1 {
+        margin: 2em 0 0 0;
+        color: #2e484c;
+        font-family: 'Julius Sans One', sans-serif;
+        font-size: 1.4em;
+        text-transform: uppercase;
+    }
+    p {
+        text-align: justify;
+        text-justify: inter-word;
+    }
+</style>
+{% endblock %}
+
+{% block contents %}
+<div>
+    <ul style="list-style-type:circle">
+        <li>Scrub the "Model probability" slider and watch the <code>DataTable</code> change.</li>
+    </ul>
+</div>
+{{ super() }}
+{% endblock %}

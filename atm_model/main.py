@@ -1,0 +1,104 @@
+from os.path import dirname, join
+
+import pandas as pd
+import numpy as np
+
+from bokeh.io import curdoc
+from bokeh.layouts import column, row
+from bokeh.models import (Button, ColumnDataSource, CustomJS, DataTable,
+                          NumberFormatter, RangeSlider, TableColumn)
+
+atms = pd.read_csv('dataset_atm_01.03.txt', sep='\t')
+df = pd.read_csv('dataset_atm_01.03.txt', sep='\t')
+result = pd.read_csv('dataset_atm_01.03.txt', sep='\t')
+
+df.pop('IdATM')
+df.pop('Год')
+from sklearn.metrics import roc_curve, precision_recall_curve, auc # метрики качества
+from sklearn.metrics import confusion_matrix, accuracy_score # метрики качества
+from sklearn.metrics import average_precision_score # метрики качества
+from sklearn.preprocessing import LabelEncoder
+label_encoder = LabelEncoder()
+text_features = ['Статус']
+for col in text_features:
+   df[col] = label_encoder.fit_transform(df[col])
+df.loc[(df['Статус'] == 1), 'Статус'] = 0
+df.loc[(df['Статус'] == 2), 'Статус'] = 1
+df.iloc[:,-1]=df.iloc[:,-1].str.replace(',','.')
+df.iloc[:,-1].replace('#Н/Д', np.nan, inplace=True)
+df.iloc[:, -1] = df.iloc[:,-1].astype(np.float)
+df.iloc[:,-1].fillna(0, inplace=True)
+from sklearn.model_selection import train_test_split
+train, test = train_test_split(df, test_size=0.3)
+train1 = train._get_numeric_data()
+target_variable_name = 'Статус'
+training_values = train1[target_variable_name]
+training_points = train1.drop(target_variable_name, axis=1)
+import pandas as pd
+import numpy as np
+import datetime
+import glob
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import roc_auc_score
+
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+# roc curve and auc score
+from sklearn.datasets import make_classification
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import roc_curve
+from sklearn.metrics import roc_auc_score
+from sklearn.metrics import log_loss
+import tensorflow as tf
+from keras.models import Sequential
+from keras.layers import Dense
+
+model = Sequential()
+model.add(Dense(70, activation='relu', input_shape=(70,)))
+model.add(Dense(70, activation='relu'))
+model.add(Dense(1, activation='sigmoid'))
+
+model.compile(loss='binary_crossentropy',
+              optimizer='adam',
+              metrics=['accuracy'])
+
+
+model.fit(training_points, training_values, epochs=8, batch_size=1, verbose=1)
+
+df1 = df._get_numeric_data()
+df1_points = df1.drop(target_variable_name, axis=1)
+prediction = model.predict(df1_points)
+result.join(pd.DataFrame(prediction))
+
+
+source = ColumnDataSource(data=dict())
+
+def update():
+    current = result[(result['0'] >= slider.value[0]) & (result['0'] <= slider.value[1])].dropna()
+    source.data = {
+        'IdATM'             : current['IdATM'],
+        'Статус'           : current['Статус'],
+        '0' : current['0']
+    }
+
+slider = RangeSlider(title="Min вероятность", start=0, end=1, value=(0, 0.1), step=0.005)
+slider.on_change('value', lambda attr, old, new: update())
+
+
+columns = [
+    TableColumn(field="IdATM", title="IdATM"),
+    TableColumn(field="Статус", title="Статус"),
+    TableColumn(field="0", title="Вероятность")
+]
+
+data_table = DataTable(source=source, columns=columns, width=800)
+
+controls = column(slider)
+
+curdoc().add_root(row(controls, data_table))
+curdoc().title = "Atm"
+
+update()
