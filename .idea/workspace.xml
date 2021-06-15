@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="9c4e2d6f-601a-4ec5-9dee-dbbd38774539" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/atm_model/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/atm_model/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -48,7 +49,7 @@
       <option name="presentableId" value="Default" />
       <updated>1623756466043</updated>
       <workItem from="1623756467537" duration="8269000" />
-      <workItem from="1623781638812" duration="1365000" />
+      <workItem from="1623781638812" duration="4128000" />
     </task>
     <servers />
   </component>

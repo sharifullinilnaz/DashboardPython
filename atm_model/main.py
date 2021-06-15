@@ -55,7 +55,7 @@ from sklearn.metrics import log_loss
 import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras.models import Sequential
-from keras.layers import Dense
+from tensorflow.keras.layers import Dense
 
 from keras import backend as Kback
 
@@ -64,32 +64,28 @@ def auc(value_true, value_pred):
     Kback.get_session().run(tf.local_variables_initializer())
     return auc
 
-model = Sequential()
-model.add(Dense(70, activation='relu', input_shape=(70,)))
-model.add(Dense(70, activation='relu'))
-model.add(Dense(1, activation='sigmoid'))
+from keras.models import load_model
 
-#model.compile(loss='binary_crossentropy',
- #             optimizer='adam',
-  #            metrics=['accuracy'])
-model.compile(loss="binary_crossentropy", optimizer='adam', metrics=[auc])
+dependencies = {
+    'auc': auc
+}
 
-model.fit(training_points, training_values, epochs=8, batch_size=1, verbose=1)
+model = keras.models.load_model('my_model2', custom_objects=dependencies)
 
 df1 = df._get_numeric_data()
 df1_points = df1.drop(target_variable_name, axis=1)
 prediction = model.predict(df1_points)
-result.join(pd.DataFrame(prediction))
+result = result.join(pd.DataFrame(prediction, columns = ['model_result']))
 
 
 source = ColumnDataSource(data=dict())
 
 def update():
-    current = result[(result['0'] >= slider.value[0]) & (result['0'] <= slider.value[1])].dropna()
+    current = result[(result['model_result'] >= slider.value[0]) & (result['model_result'] <= slider.value[1])].dropna()
     source.data = {
         'IdATM'             : current['IdATM'],
         'Статус'           : current['Статус'],
-        '0' : current['0']
+        'model_result' : current['model_result']
     }
 
 slider = RangeSlider(title="Min вероятность", start=0, end=1, value=(0, 0.1), step=0.005)
@@ -99,7 +95,7 @@ slider.on_change('value', lambda attr, old, new: update())
 columns = [
     TableColumn(field="IdATM", title="IdATM"),
     TableColumn(field="Статус", title="Статус"),
-    TableColumn(field="0", title="Вероятность")
+    TableColumn(field="model_result", title="Вероятность")
 ]
 
 data_table = DataTable(source=source, columns=columns, width=800)
